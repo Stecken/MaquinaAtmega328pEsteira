@@ -1,0 +1,64 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega328P"</DEVICE>
+ <WORKING_DIR>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc</DIR>
+  <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc</FILE>
+  <FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\Debug\AssemblerApplication1.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>AssemblerApplication1.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>AssemblerApplication1.map</FILE>
+  <FILE>AssemblerApplication1.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <Start><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>35</LINE></Start>
+  <delay_seconds><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>21</LINE></delay_seconds>
+  <loop_delay><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>25</LINE></loop_delay>
+  <delay_miliseconds><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>37</LINE></delay_miliseconds>
+  <loop_delayms><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>40</LINE></loop_delayms>
+  <delay_1microsecond><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>50</LINE></delay_1microsecond>
+  <display_write><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>70</LINE></display_write>
+  <display_show><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>84</LINE></display_show>
+  <display_loop><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>78</LINE></display_loop>
+  <display_off><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>93</LINE></display_off>
+  <eeprom_write><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>101</LINE></eeprom_write>
+  <eeprom_read><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>111</LINE></eeprom_read>
+  <usart_init><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>120</LINE></usart_init>
+  <usart_transmit><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>130</LINE></usart_transmit>
+  <usart_receive><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>138</LINE></usart_receive>
+  <analog_read><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>146</LINE></analog_read>
+  <loop_ad><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>151</LINE></loop_ad>
+  <pwm_write><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>159</LINE></pwm_write>
+  <start_timer1><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>172</LINE></start_timer1>
+  <stop_timer1><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>181</LINE></stop_timer1>
+  <lcd_init><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>194</LINE></lcd_init>
+  <pulse_enable><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>299</LINE></pulse_enable>
+  <lcd_write_caracter><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>261</LINE></lcd_write_caracter>
+  <lcd_clear><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>251</LINE></lcd_clear>
+  <loop_pulse><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>306</LINE></loop_pulse>
+  <lcd_lin0_col><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>314</LINE></lcd_lin0_col>
+  <lcd_lin1_col><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>324</LINE></lcd_lin1_col>
+  <lcd_write_number><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>334</LINE></lcd_write_number>
+  <lcd_show><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>346</LINE></lcd_show>
+  <lcd_loop><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc</FILE><LINE>340</LINE></lcd_loop>
+  <ButtonStart><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>56</LINE></ButtonStart>
+  <Loop><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>61</LINE></Loop>
+  <ligarSistema><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>70</LINE></ligarSistema>
+  <fase1><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>76</LINE></fase1>
+  <fase2><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>81</LINE></fase2>
+  <fase3><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>87</LINE></fase3>
+  <Resfriador><FILE>C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm</FILE><LINE>94</LINE></Resfriador>
+ </LABELS>
+</ASSEMBLER_INFO>
