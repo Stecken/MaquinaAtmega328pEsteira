@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm Fri Aug 21 16:19:19 2020
+AVRASM ver. 2.2.7  C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm Thu Aug 27 18:17:46 2020
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm(33): Including file 'C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc'
+C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm(34): Including file 'C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv02.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.3.300\avrasm\inc\m328pdef.inc'
-C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm(33): Including file 'C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv01.inc'
+C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\main.asm(34): Including file 'C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho1\AssemblerApplication1\AssemblerApplication1\lib328Pv02.inc'
                                  
                                  ;====================================================================
                                  
@@ -1004,6 +1004,7 @@ C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho
                                  .equ S1 = pc1	; Entrada  (Botão)	
                                  .equ S2 = pc2	; Entrada  (Botão)	
                                  .equ S3 = pc3	; Entrada  (Botão)	
+                                 .equ DISPLAY = PORTD
                                  ;====================================================================
                                  ; VARIABLES
                                  ;====================================================================
@@ -1013,12 +1014,12 @@ C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho
                                  ;====================================================================
                                  
                                        ; Reset Vector
-000000 c11e                            rjmp  Start ; Pula direto o Label Start, impedimento o carregamento completo da biblioteca.
+000000 c12e                            rjmp  Start ; Pula direto o Label Start, impedimento o carregamento completo da biblioteca.
                                  
                                  ;====================================================================
                                  ; CODE SEGMENT
                                  ;====================================================================
-                                 .include "lib328Pv01.inc" ; ínclui o header(biblioteca) para facilitar no manejo de atraso.
+                                 .include "lib328Pv02.inc" ; ínclui o header(biblioteca) para facilitar no manejo de atraso.
                                  
                                  
                                  .def delay_time = r25		
@@ -1032,7 +1033,7 @@ C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho
                                  .def overflow_counter = r13
                                  .def lcd_caracter = r19
                                  .def lcd_number = r18		
-                                 .def lcd_col = r17	
+                                 .def contador = r17	  //   .def lcd_col = r17	  // 
                                  .def aux =	r16		
                                  
                                  .equ rs_lcd = pd2
@@ -1087,359 +1088,401 @@ C:\Users\T-Gamer\Desktop\2º Meca\Materias Técnicas\MCR(Chaves)\Aula MCR\Trabalho
 000025 0000                      	nop							
 000026 9508                      	ret							
                                  
+                                 
+                                 //------------------------------------------------------------------------------------
+                                 //SUB-ROTINA que decodifica um valor de 0 -> 15 para o display 
+                                 //------------------------------------------------------------------------------------
+                                 Decodifica:
+                                  
+000027 e0f0                      	LDI  ZH,HIGH(Tabela<<1)	//carrega o endereço da tabela no registrador Z, de 16 bits (trabalha como um ponteiro)
+000028 e5ee                      	LDI  ZL,LOW(Tabela<<1) 	//deslocando a esquerda todos os bits, pois o bit 0 é para a seleção do byte alto ou baixo no end. de memória
+000029 0fe0                      	ADD  ZL,AUX 	   		//soma posição de memória correspondente ao nr. a apresentar na parte baixa do endereço
+00002a f408                      	BRCC le_tab           	//se houve Carry, incrementa parte alta do endereço, senão lê diretamente a memória
+00002b 95f3                      	INC  ZH    
+                                       
+                                 le_tab:		
+00002c 9004                      	LPM  R0,Z            	//lê valor em R0
+00002d b80b                      	OUT  DISPLAY,R0   		//mostra no display
+00002e 9508                      	RET
+                                 //------------------------------------------------------------------------------------
+                                 //	Tabela p/ decodificar o display: como cada endereço da memória flash é de 16 bits, 
+                                 //	acessa-se a parte baixa e alta na decodificação
+                                 //------------------------------------------------------------------------------------
+00002f 063f
+000030 4f5b
+000031 6d66
+000032 077d
+000033 67ff
+000034 7c77
+000035 5e39
+000036 7179                      Tabela: .dw 0x063f, 0x4f5b, 0x6d66, 0x077d, 0x67ff, 0x7c77, 0x5e39, 0x7179
+                                 //                     1 0     3 2     5 4     7 6     9 8     B A     D C     F E  
+                                 //====================================================================================
+                                 
+                                 
                                  ; ### Sub-rotina para mostrar a dezena e unidade em dois displays de 7-segmentos (Dezena: pd7,pd6,pd5,pd4 - Unidade: pd3,pd2,pd1,pd0)  ###
                                  display_write:
-000027 ef0f                      	ldi aux,0b11111111
-000028 b90a                      	out ddrd,aux
-000029 e0e0                      	ldi r30,0				
-00002a e0f0                      	ldi r31,0				
-00002b 2ff8                      	mov r31,display_number			
-00002c 308a                      	cpi display_number,10				
-00002d f028                      	brlo display_show					
+000037 ef0f                      	ldi aux,0b11111111
+000038 b90a                      	out ddrd,aux
+000039 e0e0                      	ldi r30,0				
+00003a e0f0                      	ldi r31,0				
+00003b 2ff8                      	mov r31,display_number			
+00003c 308a                      	cpi display_number,10				
+00003d f028                      	brlo display_show					
                                  display_loop:
-00002e 40fa                      	sbci r31,10				
-00002f 95e3                      	inc r30					
-000030 30fa                      	cpi r31,10				
-000031 f008                      	brlo display_show					
-000032 cffb                      	rjmp display_loop					
+00003e 40fa                      	sbci r31,10				
+00003f 95e3                      	inc r30					
+000040 30fa                      	cpi r31,10				
+000041 f008                      	brlo display_show					
+000042 cffb                      	rjmp display_loop					
                                  display_show:	
-000033 e0d0                      	ldi r29,0					
-000034 2fde                      	mov r29,r30				
-000035 95d2                      	swap r29					
-000036 2bdf                      	or r29,r31				
-000037 b9db                      	out portd,r29				
-000038 9508                      	ret				
+000043 e0d0                      	ldi r29,0					
+000044 2fde                      	mov r29,r30				
+000045 95d2                      	swap r29					
+000046 2bdf                      	or r29,r31				
+000047 b9db                      	out portd,r29				
+000048 9508                      	ret				
                                  
                                  ; ### Sub-rotina para apagar o display de 7-segmentos ###
                                  display_off:
-000039 ef0f                      	ldi aux,0b11111111
-00003a b90a                      	out ddrd,aux
-00003b efef                      	ldi r30,0b11111111
-00003c b9eb                      	out portd,r30
-00003d 9508                      	ret
+000049 ef0f                      	ldi aux,0b11111111
+00004a b90a                      	out ddrd,aux
+00004b efef                      	ldi r30,0b11111111
+00004c b9eb                      	out portd,r30
+00004d 9508                      	ret
                                  	
                                  ; ### Sub-rotina para escrita na eeprom ###
                                  eeprom_write:
-00003e 99f9                      	sbic EECR,EEPE					
-00003f cffe                      	rjmp eeprom_write
-000040 bd71                      	out EEARL,eeprom_address		
-000041 bd60                      	out EEDR,eeprom_number			
-000042 9afa                      	sbi EECR,EEMPE					
-000043 9af9                      	sbi EECR,EEPE					
-000044 9508                      	ret
+00004e 99f9                      	sbic EECR,EEPE					
+00004f cffe                      	rjmp eeprom_write
+000050 bd71                      	out EEARL,eeprom_address		
+000051 bd60                      	out EEDR,eeprom_number			
+000052 9afa                      	sbi EECR,EEMPE					
+000053 9af9                      	sbi EECR,EEPE					
+000054 9508                      	ret
                                  
                                  ; ### Sub-rotina para leitura na eeprom ###
                                  eeprom_read:
-000045 99f9                      	sbic EECR,EEPE					
-000046 cffe                      	rjmp eeprom_read
-000047 bd71                      	out EEARL,eeprom_address		
-000048 9af8                      	sbi EECR,EERE					
-000049 b560                      	in eeprom_number,EEDR				
-00004a 9508                      	ret
+000055 99f9                      	sbic EECR,EEPE					
+000056 cffe                      	rjmp eeprom_read
+000057 bd71                      	out EEARL,eeprom_address		
+000058 9af8                      	sbi EECR,EERE					
+000059 b560                      	in eeprom_number,EEDR				
+00005a 9508                      	ret
                                  	
                                  ; ### Sub-rotina de configuração da USART em 9600bps ###
                                  usart_init:
-00004b e0e0                      	ldi r30,0			
-00004c 93e0 00c5                 	sts UBRR0H,r30		 
-00004e e6e7                      	ldi r30,103			
-00004f 93e0 00c4                 	sts UBRR0L,r30		
-000051 e1e8                      	ldi r30,0b00011000	
-000052 93e0 00c1                 	sts UCSR0B,r30		 
-000054 9508                      	ret					
+00005b e0e0                      	ldi r30,0			
+00005c 93e0 00c5                 	sts UBRR0H,r30		 
+00005e e6e7                      	ldi r30,103			
+00005f 93e0 00c4                 	sts UBRR0L,r30		
+000061 e1e8                      	ldi r30,0b00011000	
+000062 93e0 00c1                 	sts UCSR0B,r30		 
+000064 9508                      	ret					
                                  	
                                  ; ### Sub-rotina para transmissão de caracter pela USART ###
                                  usart_transmit:
-000055 91e0 00c0                 	lds r30,UCSR0A		
-000057 ffe5                      	sbrs r30,UDRE0     
-000058 cffc                      	rjmp usart_transmit	
-000059 9350 00c6                 	sts UDR0,transmit_caracter		
-00005b 9508                      	ret					
+000065 91e0 00c0                 	lds r30,UCSR0A		
+000067 ffe5                      	sbrs r30,UDRE0     
+000068 cffc                      	rjmp usart_transmit	
+000069 9350 00c6                 	sts UDR0,transmit_caracter		
+00006b 9508                      	ret					
                                  
                                  ; ### Sub-rotina para transmissão de caracter pela USART ###
                                  usart_receive:
-00005c 91e0 00c0                 	lds r30,UCSR0A		
-00005e ffe7                      	sbrs r30,RXC0		
-00005f cffc                      	rjmp usart_receive	
-000060 90f0 00c6                 	lds receive_caracter, UDR0		
-000062 9508                      	ret
+00006c 91e0 00c0                 	lds r30,UCSR0A		
+00006e ffe7                      	sbrs r30,RXC0		
+00006f cffc                      	rjmp usart_receive	
+000070 90f0 00c6                 	lds receive_caracter, UDR0		
+000072 9508                      	ret
                                  
                                  ; ### Sub-rotina ADC com 8 bits => LSB = Vref/(2^n-1) = 5/255 =~ 20mV => 0b00000001 =~ 20mV ###
                                  analog_read:
-000063 e2e0                      	ldi r30,0b00100000
-000064 93e0 007c                 	sts ADMUX,r30
-000066 ece7                      	ldi r30,0b11000111
-000067 93e0 007a                 	sts ADCSRA,r30
+000073 e2e0                      	ldi r30,0b00100000
+000074 93e0 007c                 	sts ADMUX,r30
+000076 ece7                      	ldi r30,0b11000111
+000077 93e0 007a                 	sts ADCSRA,r30
                                  loop_ad:
-000069 91e0 007a                 	lds r30, ADCSRA		
-00006b fde6                      	sbrc r30, ADSC		
-00006c cffc                      	rjmp loop_ad
-00006d 90e0 0079                 	lds adc_value,ADCH
-00006f 9508                      	ret
+000079 91e0 007a                 	lds r30, ADCSRA		
+00007b fde6                      	sbrc r30, ADSC		
+00007c cffc                      	rjmp loop_ad
+00007d 90e0 0079                 	lds adc_value,ADCH
+00007f 9508                      	ret
                                  
                                  ; ### Sub-rotina PWM de 8 bits e 500Hz pela PB2 ###
                                  pwm_write:
-000070 9a22                      	sbi ddrb,pb2
-000071 eae1                      	ldi r30,0b10100001
-000072 93e0 0080                 	sts TCCR1A,r30
-000074 e0e0                      	ldi r30,0
-000075 93e0 008b                 	sts OCR1BH,r30
-000077 2fe4                      	mov r30,pwm_value
-000078 93e0 008a                 	sts OCR1BL,r30
-00007a e0e3                      	ldi r30,0b00000011
-00007b 93e0 0081                 	sts TCCR1B,r30
-00007d 9508                      	ret
+000080 9a22                      	sbi ddrb,pb2
+000081 eae1                      	ldi r30,0b10100001
+000082 93e0 0080                 	sts TCCR1A,r30
+000084 e0e0                      	ldi r30,0
+000085 93e0 008b                 	sts OCR1BH,r30
+000087 2fe4                      	mov r30,pwm_value
+000088 93e0 008a                 	sts OCR1BL,r30
+00008a e0e3                      	ldi r30,0b00000011
+00008b 93e0 0081                 	sts TCCR1B,r30
+00008d 9508                      	ret
                                  
                                  ; ### Sub-rotina Start Timer1 (1 pulso de clock = 62.5ns) Pre-scale de 64 e timer1 de 16bits => Cada estouro acontece a cada 64*65536*62.5ns = 0.262s ###
                                  start_timer1:
-00007e e0e3                      	ldi r30,0b00000011		   
-00007f 93e0 0081                 	sts TCCR1B,r30			   
-000081 e0e1                      	ldi r30,0b00000001		   
-000082 93e0 006f                 	sts TIMSK1,r30			   
-000084 9478                      	sei						  
-000085 9508                      	ret						   
+00008e e0e3                      	ldi r30,0b00000011		   
+00008f 93e0 0081                 	sts TCCR1B,r30			   
+000091 e0e1                      	ldi r30,0b00000001		   
+000092 93e0 006f                 	sts TIMSK1,r30			   
+000094 9478                      	sei						  
+000095 9508                      	ret						   
                                  
                                  ; ### Sub-rotina Stop Timer1 (1 pulso de clock = 62.5ns) Pre-scale de 64 e timer1 de 16bits => Cada estouro acontece a cada 64*65536*62.5ns = 0.262s ###
                                  stop_timer1:
-000086 e0e0                      	ldi r30,0b00000000			
-000087 93e0 0081                 	sts TCCR1B,r30
-000089 e0e0                      	ldi r30,0b00000000			
-00008a 93e0 006f                 	sts TIMSK1,r30
-00008c e0e0                      	ldi r30,0b00000000			
-00008d 93e0 0085                 	sts TCNT1H,r30				
-00008f 93e0 0084                 	sts TCNT1L,r30
-000091 e0e0                      	ldi r30,0					
-000092 2ede                      	mov overflow_counter,r30
-000093 9508                      	ret
+000096 e0e0                      	ldi r30,0b00000000			
+000097 93e0 0081                 	sts TCCR1B,r30
+000099 e0e0                      	ldi r30,0b00000000			
+00009a 93e0 006f                 	sts TIMSK1,r30
+00009c e0e0                      	ldi r30,0b00000000			
+00009d 93e0 0085                 	sts TCNT1H,r30				
+00009f 93e0 0084                 	sts TCNT1L,r30
+0000a1 e0e0                      	ldi r30,0					
+0000a2 2ede                      	mov overflow_counter,r30
+0000a3 9508                      	ret
                                  	
                                  ; ### Sub-rotina para inicialização do LCD no PORTD ###
                                  lcd_init:
-000094 9a52                      	sbi ddrd,2
-000095 9a53                      	sbi ddrd,3
-000096 9a54                      	sbi ddrd,4
-000097 9a55                      	sbi ddrd,5
-000098 9a56                      	sbi ddrd,6
-000099 9a57                      	sbi ddrd,7
-00009a 985a                      	cbi portd,rs_lcd			
-00009b 985b                      	cbi portd,enable_lcd		
-00009c 985f                      	cbi portd,pd7				
-00009d 985e                      	cbi portd,pd6
-00009e 985d                      	cbi portd,pd5
-00009f 985c                      	cbi portd,pd4
-0000a0 e09f                      	ldi delay_time,15			
-0000a1 df6b                      	rcall delay_miliseconds		 
-0000a2 985f                      	cbi portd,pd7				
-0000a3 985e                      	cbi portd,pd6
-0000a4 9a5d                      	sbi portd,pd5
-0000a5 9a5c                      	sbi portd,pd4
-0000a6 d04d                      	rcall pulse_enable
-0000a7 e095                      	ldi delay_time,5			
-0000a8 df64                      	rcall delay_miliseconds		
-0000a9 985f                      	cbi portd,pd7				
-0000aa 985e                      	cbi portd,pd6
-0000ab 9a5d                      	sbi portd,pd5
-0000ac 9a5c                      	sbi portd,pd4
-0000ad d046                      	rcall pulse_enable
-0000ae e095                      	ldi delay_time,5			
-0000af df5d                      	rcall delay_miliseconds		
-0000b0 985f                      	cbi portd,pd7				
-0000b1 985e                      	cbi portd,pd6
-0000b2 9a5d                      	sbi portd,pd5
-0000b3 9a5c                      	sbi portd,pd4
-0000b4 d03f                      	rcall pulse_enable
-0000b5 e095                      	ldi delay_time,5			
-0000b6 df56                      	rcall delay_miliseconds		
-0000b7 985f                      	cbi portd,pd7				
-0000b8 985e                      	cbi portd,pd6
-0000b9 9a5d                      	sbi portd,pd5
-0000ba 985c                      	cbi portd,pd4
-0000bb d038                      	rcall pulse_enable
-0000bc e091                      	ldi delay_time,1			
-0000bd df4f                      	rcall delay_miliseconds		
-0000be e238                      	ldi lcd_caracter,0x28			
-0000bf d011                      	rcall lcd_write_caracter				
-0000c0 e03c                      	ldi lcd_caracter,0x0C			
-0000c1 d00f                      	rcall lcd_write_caracter				
-0000c2 e031                      	ldi lcd_caracter,0x01			
-0000c3 d00d                      	rcall lcd_write_caracter				
-0000c4 e092                      	ldi delay_time,2			
-0000c5 df47                      	rcall delay_miliseconds		
-0000c6 e036                      	ldi lcd_caracter,0x06			
-0000c7 d009                      	rcall lcd_write_caracter				
-0000c8 9a5a                      	sbi portd,rs_lcd			
-0000c9 9508                      	ret							
+0000a4 9a52                      	sbi ddrd,2
+0000a5 9a53                      	sbi ddrd,3
+0000a6 9a54                      	sbi ddrd,4
+0000a7 9a55                      	sbi ddrd,5
+0000a8 9a56                      	sbi ddrd,6
+0000a9 9a57                      	sbi ddrd,7
+0000aa 985a                      	cbi portd,rs_lcd			
+0000ab 985b                      	cbi portd,enable_lcd		
+0000ac 985f                      	cbi portd,pd7				
+0000ad 985e                      	cbi portd,pd6
+0000ae 985d                      	cbi portd,pd5
+0000af 985c                      	cbi portd,pd4
+0000b0 e09f                      	ldi delay_time,15			
+0000b1 df5b                      	rcall delay_miliseconds		 
+0000b2 985f                      	cbi portd,pd7				
+0000b3 985e                      	cbi portd,pd6
+0000b4 9a5d                      	sbi portd,pd5
+0000b5 9a5c                      	sbi portd,pd4
+0000b6 d04d                      	rcall pulse_enable
+0000b7 e095                      	ldi delay_time,5			
+0000b8 df54                      	rcall delay_miliseconds		
+0000b9 985f                      	cbi portd,pd7				
+0000ba 985e                      	cbi portd,pd6
+0000bb 9a5d                      	sbi portd,pd5
+0000bc 9a5c                      	sbi portd,pd4
+0000bd d046                      	rcall pulse_enable
+0000be e095                      	ldi delay_time,5			
+0000bf df4d                      	rcall delay_miliseconds		
+0000c0 985f                      	cbi portd,pd7				
+0000c1 985e                      	cbi portd,pd6
+0000c2 9a5d                      	sbi portd,pd5
+0000c3 9a5c                      	sbi portd,pd4
+0000c4 d03f                      	rcall pulse_enable
+0000c5 e095                      	ldi delay_time,5			
+0000c6 df46                      	rcall delay_miliseconds		
+0000c7 985f                      	cbi portd,pd7				
+0000c8 985e                      	cbi portd,pd6
+0000c9 9a5d                      	sbi portd,pd5
+0000ca 985c                      	cbi portd,pd4
+0000cb d038                      	rcall pulse_enable
+0000cc e091                      	ldi delay_time,1			
+0000cd df3f                      	rcall delay_miliseconds		
+0000ce e238                      	ldi lcd_caracter,0x28			
+0000cf d011                      	rcall lcd_write_caracter				
+0000d0 e03c                      	ldi lcd_caracter,0x0C			
+0000d1 d00f                      	rcall lcd_write_caracter				
+0000d2 e031                      	ldi lcd_caracter,0x01			
+0000d3 d00d                      	rcall lcd_write_caracter				
+0000d4 e092                      	ldi delay_time,2			
+0000d5 df37                      	rcall delay_miliseconds		
+0000d6 e036                      	ldi lcd_caracter,0x06			
+0000d7 d009                      	rcall lcd_write_caracter				
+0000d8 9a5a                      	sbi portd,rs_lcd			
+0000d9 9508                      	ret							
                                  	
                                  ; ### Sub-rotina para limpar o LCD ###
                                  lcd_clear:
-0000ca 985a                      	cbi portd, rs_lcd			
-0000cb e031                      	ldi lcd_caracter,1				
-0000cc d004                      	rcall lcd_write_caracter				
-0000cd e092                      	ldi delay_time,2			
-0000ce df3e                      	rcall delay_miliseconds		
-0000cf 9a5a                      	sbi portd,rs_lcd			
-0000d0 9508                      	ret
+0000da 985a                      	cbi portd, rs_lcd			
+0000db e031                      	ldi lcd_caracter,1				
+0000dc d004                      	rcall lcd_write_caracter				
+0000dd e092                      	ldi delay_time,2			
+0000de df2e                      	rcall delay_miliseconds		
+0000df 9a5a                      	sbi portd,rs_lcd			
+0000e0 9508                      	ret
                                  	
                                  ; ### Sub-rotina para escrever um caracter no LCD ###
                                  lcd_write_caracter:
-0000d1 fd37                      	sbrc lcd_caracter,7
-0000d2 9a5f                      	sbi portd,pd7
-0000d3 ff37                      	sbrs lcd_caracter,7
-0000d4 985f                      	cbi portd,pd7
-0000d5 fd36                      	sbrc lcd_caracter,6
-0000d6 9a5e                      	sbi portd,pd6
-0000d7 ff36                      	sbrs lcd_caracter,6
-0000d8 985e                      	cbi portd,pd6
-0000d9 fd35                      	sbrc lcd_caracter,5
-0000da 9a5d                      	sbi portd,pd5
-0000db ff35                      	sbrs lcd_caracter,5
-0000dc 985d                      	cbi portd,pd5
-0000dd fd34                      	sbrc lcd_caracter,4
-0000de 9a5c                      	sbi portd,pd4
-0000df ff34                      	sbrs lcd_caracter,4
-0000e0 985c                      	cbi portd,pd4
-0000e1 d012                      	rcall pulse_enable
-0000e2 fd33                      	sbrc lcd_caracter,3
-0000e3 9a5f                      	sbi portd,pd7
-0000e4 ff33                      	sbrs lcd_caracter,3
-0000e5 985f                      	cbi portd,pd7
-0000e6 fd32                      	sbrc lcd_caracter,2
-0000e7 9a5e                      	sbi portd,pd6
-0000e8 ff32                      	sbrs lcd_caracter,2
-0000e9 985e                      	cbi portd,pd6
-0000ea fd31                      	sbrc lcd_caracter,1
-0000eb 9a5d                      	sbi portd,pd5
-0000ec ff31                      	sbrs lcd_caracter,1
-0000ed 985d                      	cbi portd,pd5
-0000ee fd30                      	sbrc lcd_caracter,0
-0000ef 9a5c                      	sbi portd,pd4
-0000f0 ff30                      	sbrs lcd_caracter,0
-0000f1 985c                      	cbi portd,pd4
-0000f2 d001                      	rcall pulse_enable
-0000f3 9508                      	ret
+0000e1 fd37                      	sbrc lcd_caracter,7
+0000e2 9a5f                      	sbi portd,pd7
+0000e3 ff37                      	sbrs lcd_caracter,7
+0000e4 985f                      	cbi portd,pd7
+0000e5 fd36                      	sbrc lcd_caracter,6
+0000e6 9a5e                      	sbi portd,pd6
+0000e7 ff36                      	sbrs lcd_caracter,6
+0000e8 985e                      	cbi portd,pd6
+0000e9 fd35                      	sbrc lcd_caracter,5
+0000ea 9a5d                      	sbi portd,pd5
+0000eb ff35                      	sbrs lcd_caracter,5
+0000ec 985d                      	cbi portd,pd5
+0000ed fd34                      	sbrc lcd_caracter,4
+0000ee 9a5c                      	sbi portd,pd4
+0000ef ff34                      	sbrs lcd_caracter,4
+0000f0 985c                      	cbi portd,pd4
+0000f1 d012                      	rcall pulse_enable
+0000f2 fd33                      	sbrc lcd_caracter,3
+0000f3 9a5f                      	sbi portd,pd7
+0000f4 ff33                      	sbrs lcd_caracter,3
+0000f5 985f                      	cbi portd,pd7
+0000f6 fd32                      	sbrc lcd_caracter,2
+0000f7 9a5e                      	sbi portd,pd6
+0000f8 ff32                      	sbrs lcd_caracter,2
+0000f9 985e                      	cbi portd,pd6
+0000fa fd31                      	sbrc lcd_caracter,1
+0000fb 9a5d                      	sbi portd,pd5
+0000fc ff31                      	sbrs lcd_caracter,1
+0000fd 985d                      	cbi portd,pd5
+0000fe fd30                      	sbrc lcd_caracter,0
+0000ff 9a5c                      	sbi portd,pd4
+000100 ff30                      	sbrs lcd_caracter,0
+000101 985c                      	cbi portd,pd4
+000102 d001                      	rcall pulse_enable
+000103 9508                      	ret
                                  	
                                  ; ### Sub-rotina para gerar um pulso de enable e aguardar =~50us ###
                                  pulse_enable:
-0000f4 985b                      	cbi portd,enable_lcd		
-0000f5 df20                      	rcall delay_1microsecond
-0000f6 9a5b                      	sbi portd,enable_lcd		
-0000f7 df1e                      	rcall delay_1microsecond
-0000f8 985b                      	cbi portd,enable_lcd
-0000f9 e3e2                      	ldi r30,50
+000104 985b                      	cbi portd,enable_lcd		
+000105 df10                      	rcall delay_1microsecond
+000106 9a5b                      	sbi portd,enable_lcd		
+000107 df0e                      	rcall delay_1microsecond
+000108 985b                      	cbi portd,enable_lcd
+000109 e3e2                      	ldi r30,50
                                  loop_pulse:
-0000fa df1b                      	rcall delay_1microsecond
-0000fb 95ea                      	dec r30
-0000fc 30e0                      	cpi r30,0
-0000fd f7e1                      	brne loop_pulse
-0000fe 9508                      	ret
+00010a df0b                      	rcall delay_1microsecond
+00010b 95ea                      	dec r30
+00010c 30e0                      	cpi r30,0
+00010d f7e1                      	brne loop_pulse
+00010e 9508                      	ret
                                  
                                  ; ### Sub-rotina para posicionar cursor na linha 0 do LCD ###
                                  lcd_lin0_col:
-0000ff 985a                      	cbi portd,rs_lcd			
-000100 e8e0                      	ldi r30,0x80
-000101 0f1e                      	add lcd_col,r30
-000102 2f31                      	mov lcd_caracter,lcd_col			
-000103 dfcd                      	rcall lcd_write_caracter				
-000104 9a5a                      	sbi portd,rs_lcd			
-000105 9508                      	ret
+00010f 985a                      	cbi portd,rs_lcd			
+000110 e8e0                      	ldi r30,0x80
+000111 0f1e                      	add contador,r30
+000112 2f31                      	mov lcd_caracter,contador		
+000113 dfcd                      	rcall lcd_write_caracter				
+000114 9a5a                      	sbi portd,rs_lcd			
+000115 9508                      	ret
                                  
                                  ; ### Sub-rotina para posicionar cursor na linha 1 do LCD ###
                                  lcd_lin1_col:
-000106 985a                      	cbi portd,rs_lcd			
-000107 ece0                      	ldi r30,0xC0
-000108 0f1e                      	add lcd_col,r30
-000109 2f31                      	mov lcd_caracter,lcd_col			
-00010a dfc6                      	rcall lcd_write_caracter				
-00010b 9a5a                      	sbi portd,rs_lcd			
-00010c 9508                      	ret
+000116 985a                      	cbi portd,rs_lcd			
+000117 ece0                      	ldi r30,0xC0
+000118 0f1e                      	add contador,r30
+000119 2f31                      	mov lcd_caracter,contador		
+00011a dfc6                      	rcall lcd_write_caracter				
+00011b 9a5a                      	sbi portd,rs_lcd			
+00011c 9508                      	ret
                                  
                                  ; ### Sub-rotina para escrever um numero de 0 a 99 no LCD ###
                                  lcd_write_number:
-00010d e0f0                      	ldi r31,0				
-00010e e0e0                      	ldi r30,0				
-00010f 2fe2                      	mov r30,lcd_number			
-000110 302a                      	cpi lcd_number,10				
-000111 f028                      	brlo lcd_show					
+00011d e0f0                      	ldi r31,0				
+00011e e0e0                      	ldi r30,0				
+00011f 2fe2                      	mov r30,lcd_number			
+000120 302a                      	cpi lcd_number,10				
+000121 f028                      	brlo lcd_show					
                                  lcd_loop:
-000112 40ea                      	sbci r30,10				
-000113 95f3                      	inc r31					
-000114 30ea                      	cpi r30,10				
-000115 f008                      	brlo lcd_show					
-000116 cffb                      	rjmp lcd_loop					
+000122 40ea                      	sbci r30,10				
+000123 95f3                      	inc r31					
+000124 30ea                      	cpi r30,10				
+000125 f008                      	brlo lcd_show					
+000126 cffb                      	rjmp lcd_loop					
                                  lcd_show:	
-000117 e3d0                      	ldi r29,48
-000118 0fed                      	add r30,r29
-000119 0ffd                      	add r31,r29
-00011a 2f3f                      	mov lcd_caracter,r31
-00011b dfb5                      	rcall lcd_write_caracter
-00011c 2f3e                      	mov lcd_caracter,r30
-00011d dfb3                      	rcall lcd_write_caracter
-00011e 9508                      
+000127 e3d0                      	ldi r29,48
+000128 0fed                      	add r30,r29
+000129 0ffd                      	add r31,r29
+00012a 2f3f                      	mov lcd_caracter,r31
+00012b dfb5                      	rcall lcd_write_caracter
+00012c 2f3e                      	mov lcd_caracter,r30
+00012d dfb3                      	rcall lcd_write_caracter
+00012e 9508                      
                                  Start:
                                        ; Write your code here
-00011f 9a20                            sbi ddrb, 0	; Configura a porta pb0 como saída
-000120 9a21                            sbi ddrb, 1	; Configura a porta pb1 como saída
-000121 9a22                      	  sbi ddrb, 2	; Configura a porta pb2 como saída
-000122 9a23                      	  sbi ddrb, 3   ; Configura a porta pb1 como saída
-                                 ;--------------------------------------------------------------------;
-                                 ;------------------------PC0 ->  habilitado--------------------------;
-000123 9838                            cbi ddrc, 0	; Configura a porta pc0 como entrada
-000124 9a40                            sbi portc, 0	; SET 1Habilita resistor de pull-up na porta pc0
-                                 ;------------------------PC1 ->  habilitado--------------------------;
-000125 9839                      	  cbi ddrc, 1	; Configura a porta pc0 como entrada
-000126 9a41                            sbi portc, 1	; SET 1Habilita resistor de pull-up na porta pc0
-                                 ;------------------------PC2 ->  habilitado--------------------------;
-000127 983a                      	  cbi ddrc, 2	; Configura a porta pc0 como entrada
-000128 9a42                            sbi portc, 2	; SET 1Habilita resistor de pull-up na porta pc0
-                                 ;------------------------PC3 ->  habilitado--------------------------;
-000129 983b                      	  cbi ddrc, 3	; Configura a porta pc0 como entrada
-00012a 9a43                            sbi portc, 3	; SET 1Habilita resistor de pull-up na porta pc0
-                                 
+00012f e00f                      	  ldi r16, 0b00001111
+000130 b904                      	  out ddrb, r16
+                                 ;------------------------Entradas - pull-up--------------------------;
+000131 ef00                            ldi r16, 0b11110000
+000132 b907                      	  out ddrc, r16
+000133 ef0f                      	  ldi r16, 0b11111111
+000134 b908                      	  out portc, r16
+                                 ;------------------------display - portd--------------------------;
+000135 b90a                      	  out ddrd, r16
+000136 e010                      	  ldi r17, 0
                                  	  
                                  ButtonStart:
-00012b 9930                      	  sbic pinc, StartBu ; Testa se PC0 está sendo apertado(0 no Portc), caso esteja, pula de linha e executa a linha 59, caso faz um loop infinito, até que ocorra o contrário
-00012c cffe                      	  rjmp ButtonStart ;  Pula ao lable ButtonStart
-00012d c000                      	  rjmp Loop ; Pula ao lable Loop
+000137 9930                      	  sbic pinc, StartBu ; Testa se PC0 está sendo apertado(0 no Portc), caso esteja, pula de linha e executa a linha 59, caso faz um loop infinito, até que ocorra o contrário
+000138 cffe                      	  rjmp ButtonStart ;  Pula ao lable ButtonStart
+000139 c000                      	  rjmp Loop ; Pula ao lable Loop
                                  
                                  Loop: ; Lable principal do programa
-00012e 940e 0139                 	  call ligarSistema ; Faz uma chamada(pula) relativa ao ligarSistema
-000130 940e 013d                 	  call fase1
-000132 982a                      	  cbi portb, Cilindro
-000133 940e 0140                 	  call fase2
-000135 9a29                      	  sbi portb, Motor	
-000136 940e 0144                 	  call fase3
-000138 cff2                      	  rjmp ButtonStart
+00013a 940e 0145                 	  call ligarSistema ; Faz uma chamada(pula) relativa ao ligarSistema
+00013c 940e 014a                 	  call fase1
+00013e 982a                      	  cbi portb, Cilindro
+00013f 940e 014d                 	  call fase2
+000141 9a29                      	  sbi portb, Motor	
+000142 940e 0151                 	  call fase3
+000144 cff2                      	  rjmp ButtonStart
                                  
                                  ligarSistema:
-000139 9a28                      	  sbi portb, LedStart
-00013a 9a29                      	  sbi portb, Motor
-00013b 9a2a                      	  sbi portb, Cilindro
-00013c 9508                      	  ret
-                                   
+000145 e007                      	  ldi r16, 0b00000111
+000146 b905                      	  out portb, r16
+000147 940e 015f                 	  call mostra
+000149 9508                      	  ret
+                                 ;====================================================================; 
                                  fase1:	  
-00013d 9931                      	  sbic pinc, S1
-00013e cffe                      	  rjmp fase1
-00013f 9508                            ret
+00014a 9931                      	  sbic pinc, S1
+00014b cffe                      	  rjmp fase1
+00014c 9508                            ret
                                  
                                  fase2:
-000140 9932                      	  sbic pinc, S2
-000141 cffe                      	  rjmp fase2
-000142 d006                      	  rcall Resfriador
-000143 9508                      	  ret
+00014d 9932                      	  sbic pinc, S2
+00014e cffe                      	  rjmp fase2
+00014f d012                      	  rcall Resfriador
+000150 9508                      	  ret
                                  
                                  fase3:
-000144 9933                      	  sbic pinc, S3
-000145 cffe                      	  rjmp fase3
-000146 9829                      	  cbi portb, Motor
-000147 9828                      	  cbi portb, LedStart
-000148 9508                      	  ret
+000151 9933                      	  sbic pinc, S3
+000152 cffe                      	  rjmp fase3
+000153 d000                      	  rcall contagem	  
+                                 ;====================================================================;
+                                 contagem:
+000154 9513                      	  inc r17
+000155 d009                      	  rcall mostra
+000156 e006                      	  ldi r16, 6
+000157 1710                      	  cp r17, r16
+000158 f709                      	  brne loop
+000159 c000                      	  rjmp desliga
                                  
+                                 desliga:
+00015a 9829                      	  cbi portb, Motor
+00015b 9828                      	  cbi portb, LedStart
+00015c 2711                      	  CLR R17
+00015d d001                      	  rcall mostra
+00015e cfd8                      	  rjmp ButtonStart 
+                                 
+                                 mostra:
+00015f 2f01                      	  mov AUX, r17
+000160 dec6                      	  rcall Decodifica
+000161 9508                      	  ret
+                                 
+                                 ;====================================================================;	
                                  Resfriador:
-000149 9829                            cbi portb, Motor	
-00014a 9a2b                      	  sbi portb, Resfriar
-00014b e095                      	  ldi delay_time, 5  	; Carrega delay_time com 5 (5 segundos)
-00014c deb4                            rcall delay_seconds	; Chama rotina de atraso
-00014d 982b                      	  cbi portb, Resfriar	
-00014e 9508                      	  ret
-                                 
+000162 9829                            cbi portb, Motor	
+000163 9a2b                      	  sbi portb, Resfriar
+000164 e095                      	  ldi delay_time, 5  	; Carrega delay_time com 5 (5 segundos)
+000165 de9b                            rcall delay_seconds	; Chama rotina de atraso
+000166 982b                      	  cbi portb, Resfriar	
+000167 9508                      	  ret
                                  ;====================================================================;
 
 
@@ -1458,39 +1501,39 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega328P" register use summary:
-x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   0 y  :   0 z  :   1 r0 :   2 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   1 r14:   1 r15:   1 r16:   4 r17:   4 r18:   2 r19:  25 r20:   1 
+r13:   1 r14:   1 r15:   1 r16:  17 r17:   9 r18:   2 r19:  25 r20:   1 
 r21:   1 r22:   2 r23:   2 r24:   2 r25:  10 r26:   0 r27:   0 r28:   0 
-r29:  12 r30:  59 r31:  11 
-Registers used: 16 out of 35 (45.7%)
+r29:  12 r30:  61 r31:  13 
+Registers used: 18 out of 35 (51.4%)
 
 "ATmega328P" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   4 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   5 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
+brcc  :   1 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   4 brlt  :   0 brmi  :   0 
-brne  :   8 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   4 cbi   :  37 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
+brne  :   9 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brvs  :   0 bset  :   0 bst   :   0 call  :   5 cbi   :  33 cbr   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   1 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
 cpi   :   5 cpse  :   0 dec   :   8 eor   :   0 fmul  :   0 fmuls :   0 
-fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   2 jmp   :   0 
-ld    :   0 ldd   :   0 ldi   :  44 lds   :   5 lpm   :   0 lsl   :   0 
-lsr   :   0 mov   :   9 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
-neg   :   0 nop   :  16 or    :   1 ori   :   0 out   :   7 pop   :   0 
-push  :   0 rcall :  27 ret   :  26 reti  :   0 rjmp  :  14 rol   :   0 
-ror   :   0 sbc   :   0 sbci  :   2 sbi   :  43 sbic  :   6 sbis  :   0 
+fmulsu:   0 icall :   0 ijmp  :   0 in    :   1 inc   :   4 jmp   :   0 
+ld    :   0 ldd   :   0 ldi   :  52 lds   :   5 lpm   :   2 lsl   :   0 
+lsr   :   0 mov   :  10 movw  :   0 mul   :   0 muls  :   0 mulsu :   0 
+neg   :   0 nop   :  16 or    :   1 ori   :   0 out   :  13 pop   :   0 
+push  :   0 rcall :  31 ret   :  27 reti  :   0 rjmp  :  16 rol   :   0 
+ror   :   0 sbc   :   0 sbci  :   2 sbi   :  32 sbic  :   6 sbis  :   0 
 sbiw  :   0 sbr   :   0 sbrc  :   9 sbrs  :  10 sec   :   0 seh   :   0 
 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 sev   :   0 
 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 sts   :  16 
 sub   :   0 subi  :   0 swap  :   1 tst   :   0 wdr   :   0 
-Instructions used: 26 out of 113 (23.0%)
+Instructions used: 30 out of 113 (26.5%)
 
 "ATmega328P" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00029e    670      0    670   32768   2.0%
+[.cseg] 0x000000 0x0002d0    704     16    720   32768   2.2%
 [.dseg] 0x000100 0x000100      0      0      0    2048   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
 

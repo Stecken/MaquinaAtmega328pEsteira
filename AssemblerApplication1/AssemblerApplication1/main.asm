@@ -16,6 +16,7 @@
 .equ S1 = pc1	; Entrada  (Botão)	
 .equ S2 = pc2	; Entrada  (Botão)	
 .equ S3 = pc3	; Entrada  (Botão)	
+.equ DISPLAY = PORTD
 ;====================================================================
 ; VARIABLES
 ;====================================================================
@@ -30,28 +31,20 @@
 ;====================================================================
 ; CODE SEGMENT
 ;====================================================================
-.include "lib328Pv01.inc" ; ínclui o header(biblioteca) para facilitar no manejo de atraso.
+.include "lib328Pv02.inc" ; ínclui o header(biblioteca) para facilitar no manejo de atraso.
 
 Start:
       ; Write your code here
-      sbi ddrb, 0	; Configura a porta pb0 como saída
-      sbi ddrb, 1	; Configura a porta pb1 como saída
-	  sbi ddrb, 2	; Configura a porta pb2 como saída
-	  sbi ddrb, 3   ; Configura a porta pb1 como saída
-;--------------------------------------------------------------------;
-;------------------------PC0 ->  habilitado--------------------------;
-      cbi ddrc, 0	; Configura a porta pc0 como entrada
-      sbi portc, 0	; SET 1Habilita resistor de pull-up na porta pc0
-;------------------------PC1 ->  habilitado--------------------------;
-	  cbi ddrc, 1	; Configura a porta pc0 como entrada
-      sbi portc, 1	; SET 1Habilita resistor de pull-up na porta pc0
-;------------------------PC2 ->  habilitado--------------------------;
-	  cbi ddrc, 2	; Configura a porta pc0 como entrada
-      sbi portc, 2	; SET 1Habilita resistor de pull-up na porta pc0
-;------------------------PC3 ->  habilitado--------------------------;
-	  cbi ddrc, 3	; Configura a porta pc0 como entrada
-      sbi portc, 3	; SET 1Habilita resistor de pull-up na porta pc0
-
+	  ldi r16, 0b00001111
+	  out ddrb, r16
+;------------------------Entradas - pull-up--------------------------;
+      ldi r16, 0b11110000
+	  out ddrc, r16
+	  ldi r16, 0b11111111
+	  out portc, r16
+;------------------------display - portd--------------------------;
+	  out ddrd, r16
+	  ldi r17, 0
 	  
 ButtonStart:
 	  sbic pinc, StartBu ; Testa se PC0 está sendo apertado(0 no Portc), caso esteja, pula de linha e executa a linha 59, caso faz um loop infinito, até que ocorra o contrário
@@ -68,11 +61,11 @@ Loop: ; Lable principal do programa
 	  rjmp ButtonStart
 
 ligarSistema:
-	  sbi portb, LedStart
-	  sbi portb, Motor
-	  sbi portb, Cilindro
+	  ldi r16, 0b00000111
+	  out portb, r16
+	  call mostra
 	  ret
-  
+;====================================================================; 
 fase1:	  
 	  sbic pinc, S1
 	  rjmp fase1
@@ -87,10 +80,29 @@ fase2:
 fase3:
 	  sbic pinc, S3
 	  rjmp fase3
+	  rcall contagem	  
+;====================================================================;
+contagem:
+	  inc r17
+	  rcall mostra
+	  ldi r16, 6
+	  cp r17, r16
+	  brne loop
+	  rjmp desliga
+
+desliga:
 	  cbi portb, Motor
 	  cbi portb, LedStart
+	  CLR R17
+	  rcall mostra
+	  rjmp ButtonStart 
+
+mostra:
+	  mov AUX, r17
+	  rcall Decodifica
 	  ret
 
+;====================================================================;	
 Resfriador:
       cbi portb, Motor	
 	  sbi portb, Resfriar
@@ -98,5 +110,4 @@ Resfriador:
       rcall delay_seconds	; Chama rotina de atraso
 	  cbi portb, Resfriar	
 	  ret
-
 ;====================================================================;
