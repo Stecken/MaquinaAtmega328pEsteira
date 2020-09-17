@@ -16,7 +16,7 @@
 .equ S1 = pc1	; Entrada  (Botão)	
 .equ S2 = pc2	; Entrada  (Botão)	
 .equ S3 = pc3	; Entrada  (Botão)	
-.equ DISPLAY = PORTD
+.equ LCDisplay = PORTD
 ;====================================================================
 ; VARIABLES
 ;====================================================================
@@ -34,7 +34,6 @@
 .include "lib328Pv02.inc" ; ínclui o header(biblioteca) para facilitar no manejo de atraso.
 
 Start:
-      ; Write your code here
 	  ldi r16, 0b00001111
 	  out ddrb, r16
 ;------------------------Entradas - pull-up--------------------------;
@@ -43,8 +42,11 @@ Start:
 	  ldi r16, 0b11111111
 	  out portc, r16
 ;------------------------display - portd--------------------------;
-	  out ddrd, r16
-	  ldi r17, 0
+	  out DDRD, r16
+	  rcall lcd_init
+	  rcall lcd_clear
+	  rcall piscaInic
+	  rcall CaixaContText
 	  
 ButtonStart:
 	  sbic pinc, StartBu ; Testa se PC0 está sendo apertado(0 no Portc), caso esteja, pula de linha e executa a linha 59, caso faz um loop infinito, até que ocorra o contrário
@@ -83,31 +85,115 @@ fase3:
 	  rcall contagem	  
 ;====================================================================;
 contagem:
-	  inc r17
+	  inc r13 ; r17 = r17 + 1
+	  mov r27, r13
 	  rcall mostra
-	  ldi r16, 6
-	  cp r17, r16
-	  brne loop
+	  cpi r27, 3 ; R17 - R16 = 0 -> Zero Flag(1); 
+	  brne loop ; Desvia se diferente, ou seja, se o bit Zero Flag estiver desativado(0)
 	  rjmp desliga
 
 desliga:
 	  cbi portb, Motor
 	  cbi portb, LedStart
-	  CLR R17
+	  clr r13
 	  rcall mostra
 	  rjmp ButtonStart 
 
 mostra:
-	  mov AUX, r17
-	  rcall Decodifica
+	  rcall contCaixa
 	  ret
 
 ;====================================================================;	
 Resfriador:
       cbi portb, Motor	
 	  sbi portb, Resfriar
-	  ldi delay_time, 5  	; Carrega delay_time com 5 (5 segundos)
+	  ldi delay_time, 2 	; Carrega delay_time com 5 (5 segundos)
       rcall delay_seconds	; Chama rotina de atraso
 	  cbi portb, Resfriar	
 	  ret
 ;====================================================================;
+
+lcd_inicio:
+	ldi lcd_col, 2
+    rcall lcd_lin0_col
+	ldi lcd_caracter, 'P'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'R'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'O'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'G'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'R'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'A'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'M'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'A'
+	rcall lcd_write_caracter
+
+	ldi lcd_col, 2
+    rcall lcd_lin1_col
+	ldi lcd_caracter, 'C'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'O'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'M'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'E'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'C'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'A'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'N'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'D'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'O'
+	rcall lcd_write_caracter
+	ret
+
+piscaInic:
+	rcall lcd_inicio
+	ldi delay_time, 1
+	rcall delay_seconds
+	rcall lcd_clear
+	ldi delay_time, 1
+	rcall delay_seconds
+	rcall lcd_inicio
+	ldi delay_time, 1
+	rcall delay_seconds
+	rcall lcd_clear
+	ldi delay_time, 1
+	rcall delay_seconds
+	ret
+
+CaixaContText:
+	ldi lcd_col, 0
+    rcall lcd_lin1_col
+	ldi lcd_caracter, 'C'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'A'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'I'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'X'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'A'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, 'S'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, ':'
+	rcall lcd_write_caracter
+	ldi lcd_caracter, ' '
+	rcall lcd_write_caracter
+	ret
+
+contCaixa:
+	ldi lcd_col, 9
+    rcall lcd_lin1_col
+	mov lcd_number, r13
+	rcall lcd_write_number
+	ret

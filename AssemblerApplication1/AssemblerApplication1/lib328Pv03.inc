@@ -94,6 +94,7 @@ le_tab:
 //                     1 0     3 2     5 4     7 6     9 8     B A     D C     F E  
 //====================================================================================
 
+
 ; ### Sub-rotina para mostrar a dezena e unidade em dois displays de 7-segmentos (Dezena: pd7,pd6,pd5,pd4 - Unidade: pd3,pd2,pd1,pd0)  ###
 display_write:
 	ldi aux,0b11111111
@@ -400,12 +401,9 @@ lcd_show_low:
 lcd_show_high:	
 	ldi r29,48
 	add r28, r29 ; Soma nosso número, ao número do display
-	add r31, r29
-	mov lcd_caracter, r31
+	add r31,r29
+	mov lcd_caracter,r31
 	rcall lcd_write_caracter
-	mov lcd_caracter, r28
+	mov lcd_caracter,r28
 	rcall lcd_write_caracter
 	ret
-
-
-	
